@@ -3,18 +3,18 @@ const { getCompositions, renderMedia } = require('@remotion/renderer');
 const app = express();
 app.use(express.json());
 
-const serveUrl = 'https://your-remotion-template.vercel.app'; // ← 여기 Vercel 주소로 바꾸세요
+const serverUrl = 'https://your-remotion-template.vercel.app'; // ← 여기에 Vercel 주소로 바꾸세요
 
 app.post('/render', async (req, res) => {
   try {
     const { compositionId, inputProps } = req.body;
 
-    const compositions = await getCompositions(serveUrl, { inputProps });
+    const compositions = await getCompositions(serverUrl, { inputProps });
     const comp = compositions.find((c) => c.id === compositionId);
     if (!comp) return res.status(404).send('Composition not found');
 
-    const { filepath } = await renderMedia({
-      serveUrl,
+    const filepath = await renderMedia({
+      serverUrl,
       composition: comp,
       codec: 'h264',
       inputProps,
@@ -28,7 +28,9 @@ app.post('/render', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('✅ Remotion API server running on port 3000');
+// ✅ 포트 설정 부분 수정
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`✅ Remotion API server running on port ${port}`);
 });
 
